@@ -1,2 +1,5 @@
 # Mossad_recruitement
-Find the best matching candidates for the right position for Mossad
+TODO:
+1. review rejected list (think about just removing candidates from cache)
+2. test endpoints
+3. write Blazor client
