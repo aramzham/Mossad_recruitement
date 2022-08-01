@@ -16,12 +16,12 @@ app.MapGet("/criterias", (ICriteriaService criteriaService) => criteriaService.G
 app.MapPost("/criterias", (ICriteriaService criteriaService, IEnumerable<Criteria> criterias) => criteriaService.Set(criterias));
 
 // candidates
-app.MapGet("/candidate/next/{id}", (ICandidateService candidateService, Guid id) => candidateService.Next(id));
+app.MapGet("/candidate/next", (ICandidateService candidateService) => candidateService.Next());
 
 app.MapGet("/candidate/accepted", (ICandidateService candidateService) => candidateService.GetAccepted());
 
-app.MapPost("/candidate/accept/{id}", (ICandidateService candidateService, Guid id) => candidateService.Accept(id));
+app.MapPost("/candidate/accept/{id:guid}", (ICandidateService candidateService, Guid id) => candidateService.Accept(id));
 
-app.MapPost("/candidate/reject/{id}", (ICandidateService candidateService, Guid id) => candidateService.Reject(id));
+app.MapPost("/candidate/reject/{id:guid}", (ICandidateService candidateService, Guid id) => candidateService.Reject(id));
 
 app.Run("http://localhost:3210");

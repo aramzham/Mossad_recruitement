@@ -15,38 +15,14 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
             _cache = cache;
         }
 
-        public Task Accept(Guid id)
+        public async Task Accept(Guid id)
         {
-            return Examine(id, CacheKeys.Accepted);
-        }
-
-        public async Task<IEnumerable<Candidate>> FilterByCriteria(IEnumerable<Criteria> criterias)
-        {
-            var candidatesInCache = await EnsureCandidatesSetInCache();
-
-            var filteredCandidates = new List<Candidate>();
-            foreach (var candidate in candidatesInCache.Values) 
-            {
-                foreach (var experience in candidate.experience) 
-                {
-                    if (criterias.Any(x => x.Technology == experience.technologyId && x.YearsOfExperience <= experience.yearsOfExperience))
-                    { 
-                        filteredCandidates.Add(candidate);
-                        break;
-                    }
-                }
-            }
-
-            return filteredCandidates;
-        }
-
-        public async Task<Candidate> Get(Guid id)
-        {
-            var candidatesInCache = await EnsureCandidatesSetInCache();
-            if(candidatesInCache.ContainsKey(id))
-                return candidatesInCache[id];
-
-            throw new Exception("no candidate found by specified id");
+            await RemoveFromCache(id);
+            
+            // add to accepted list
+            var examinedCandidates = _cache.Get<List<Guid>>(CacheKeys.Accepted);
+            examinedCandidates.Add(id);
+            _cache.Set(CacheKeys.Accepted, examinedCandidates);
         }
 
         public async Task<IEnumerable<Candidate>> GetAccepted()
@@ -57,24 +33,35 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
             return acceptedIds?.Select(x=> candidatesInCache[x]); // may have been a response model with only full name and id, because that's what we'll use accepted candidates page
         }
 
-        public async Task<IEnumerable<Candidate>> GetAll()
+        public async Task<Candidate> Next()
         {
             var candidatesInCache = await EnsureCandidatesSetInCache();
-            return candidatesInCache.Values;
-        }
+            var criterias = _cache.Get<IEnumerable<Criteria>>(CacheKeys.Criterias) ?? new List<Criteria>();
+            
+            var candidate = default(Candidate);
+            var random = new Random();
 
-        public async Task<Candidate> Next(Guid id)
-        {
-            var candidatesInCache = await EnsureCandidatesSetInCache();
-            var accepted = _cache.Get<IEnumerable<Guid>>(CacheKeys.Accepted);
-            var rejected = _cache.Get<IEnumerable<Guid>>(CacheKeys.Rejected);
+            // some sort of randomness
+            while (candidate is null)
+            {
+                candidate = candidatesInCache.ElementAt(random.Next(0, candidatesInCache.Count)).Value;
 
-            return candidatesInCache.FirstOrDefault(x => x.Key != id && !accepted.Contains(x.Key) && !rejected.Contains(x.Key)).Value;
+                // look at experience
+                foreach (var experience in candidate.experience)
+                {
+                    if (!criterias.Any(x => x.Technology == experience.technologyId && x.YearsOfExperience <= experience.yearsOfExperience))
+                    { 
+                        break;
+                    }
+                }
+            }
+            
+            return candidate;
         }
 
         public Task Reject(Guid id)
         {
-            return Examine(id, CacheKeys.Rejected);
+            return RemoveFromCache(id);
         }
 
         private async Task<IDictionary<Guid, Candidate>> EnsureCandidatesSetInCache()
@@ -95,7 +82,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
             return candidates;
         }
 
-        private async Task Examine(Guid id, string cacheKey) 
+        private async Task RemoveFromCache(Guid id) 
         {
             var candidatesInCache = await EnsureCandidatesSetInCache();
             if (!candidatesInCache.ContainsKey(id))
@@ -104,11 +91,6 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
             // remove from cache so no second chance is provided
             candidatesInCache.Remove(id);
             _cache.Set(CacheKeys.Candidates, candidatesInCache);
-
-            // add to accepted list
-            var examinedCandidates = _cache.Get<List<Guid>>(cacheKey);
-            examinedCandidates.Add(id);
-            _cache.Set(cacheKey, examinedCandidates);
         }
     }
 }
