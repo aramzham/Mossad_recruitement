@@ -7,6 +7,6 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services.Interfaces
         Task<Candidate> Next();
         Task Accept(Guid id);
         Task Reject(Guid id);
-        Task<IEnumerable<Candidate>> GetAccepted();
+        IEnumerable<Candidate> GetAccepted();
     }
 }

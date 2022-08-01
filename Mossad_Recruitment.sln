@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mossad_Recruitment.Api", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mossad_Recruitment.Common", "Mossad_Recruitment.Common\Mossad_Recruitment.Common.csproj", "{B69DB304-5295-48A2-A43D-03A7C6782F09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mossad_Recruitment.Front", "Mossad_Recruitment.Front\Mossad_Recruitment.Front.csproj", "{8336B3A8-D753-433E-9BC3-CFACE2EFCD7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mossad_Recruitment.Front", "Mossad_Recruitment.Front\Mossad_Recruitment.Front.csproj", "{8336B3A8-D753-433E-9BC3-CFACE2EFCD7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

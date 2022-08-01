@@ -1,0 +1,9 @@
+﻿@page "/accepted"
+@inherits Base.AcceptedBase
+
+<RadzenCard>
+    <RadzenCard>
+        <h4>Accepted</h4>
+        <RadzenListBox @bind-Value=@Candidates Data=@Candidates.Select(x=>x.fullName) TextProperty="Name" ValueProperty="fullName" Style="height:500px" Class="w-100" />
+    </RadzenCard>
+</RadzenCard>
