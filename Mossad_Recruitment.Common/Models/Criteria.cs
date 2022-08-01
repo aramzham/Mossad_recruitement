@@ -1,4 +1,6 @@
-﻿namespace Mossad_Recruitment.Common.Models
+﻿using System;
+
+namespace Mossad_Recruitment.Common.Models
 {
     public class Criteria
     {

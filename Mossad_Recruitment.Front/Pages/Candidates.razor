@@ -1,4 +1,5 @@
 ﻿@page "/candidates"
+@using Mossad_Recruitment.Common.Dtos
 @inherits Base.CandidatesBase
 
 <div class="row my-5">
@@ -6,27 +7,23 @@
         <RadzenCard class="m-3">
             <h3 class="h5">Candidate</h3>
             <div class="d-flex flex-row">
-                <RadzenImage Path="@Candidate.profilePicture" Class="rounded-circle float-left mr-3" Style="width: 100px; height: 100px;" />
+                <RadzenImage Path="@Candidate.ImageUrl" Class="rounded-circle float-left mr-3" Style="width: 100px; height: 100px;" />
                 <div>
                     <div>Name</div>
-                    <b>@Candidate.fullName</b>
+                    <b>@Candidate.Name</b>
                     <div class="mt-3">Email</div>
-                    <b>@Candidate.email</b>
+                    <b>@Candidate.Email</b>
                 </div>
             </div>
         </RadzenCard>
         <RadzenCard class="m-3">
-            <h3 class="h5">Information</h3>
-            <div class="row">
-                <div class="col-md-4">
-                    <div>Favorite music</div>
-                    <b>@Candidate.favoriteMusicGenre</b>
-                </div>
-                <div class="col-md-8">
-                    <div>Can swim?</div>
-                    <b>@(Candidate.canSwim ? "Yes" : "No")</b>
-                </div>
-            </div>
+            <h3 class="h5">Experience</h3>
+            <RadzenDataGrid PageSize="5" AllowPaging="true" AllowSorting="true" Data="@Candidate.Experience" TItem="ExperienceDto" Style="height:200px">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ExperienceDto" Property="Technology" Title="Technology" Width="95px" />
+                    <RadzenDataGridColumn TItem="ExperienceDto" Property="YearsOfExperience" Title="YOE" Width="55px" />
+                </Columns>
+            </RadzenDataGrid>
         </RadzenCard>
         <RadzenButton Click=@(()=>Accept_OnClick(Candidate.Id)) Text="Accept" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
         <RadzenButton Click=@(()=>Reject_OnClick(Candidate.Id)) Text="Reject" Icon="report" ButtonStyle="ButtonStyle.Danger" />
