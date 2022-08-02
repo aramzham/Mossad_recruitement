@@ -1,7 +1,16 @@
 ﻿@page "/accepted"
 @inherits Base.AcceptedBase
 
-<RadzenCard>
+@if (@Candidates is null || !@Candidates.Any())
+{
     <h4>Accepted</h4>
-    <RadzenListBox @bind-Value=@Candidates Data=@Candidates TextProperty="Name" ValueProperty="Id" Style="height:500px" Class="w-100" />
-</RadzenCard>
+    <NoData />
+}
+else
+{
+    <RadzenCard>
+        <h4>Accepted</h4>
+        <RadzenListBox @bind-Value=@Candidates Data=@Candidates TextProperty="Name" ValueProperty="Id" Style="height:500px" Class="w-100" />
+    </RadzenCard>
+}
+
