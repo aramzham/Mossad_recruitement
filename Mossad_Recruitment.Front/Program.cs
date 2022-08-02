@@ -10,5 +10,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiBaseAddress"]) });
 builder.Services.AddTransient<ICandidatesService, CandidatesService>();
+builder.Services.AddTransient<ICriteriaService, CriteriaService>();
+builder.Services.AddTransient<ITechnologyService, TechnologyService>();
 
 await builder.Build().RunAsync();

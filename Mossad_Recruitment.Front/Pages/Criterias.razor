@@ -1,7 +1,25 @@
 ﻿@page "/criterias"
+@using Mossad_Recruitment.Common.Models
+@inherits Base.CriteriasBase
 
 <h3>Criterias</h3>
 
-@code {
-
+@if (@Criterias is null)
+{
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else
+{
+    <RadzenDataGrid @ref="CriteriaDataGrid" AllowFiltering="true" AllowPaging="true" PageSize="20" AllowSorting="true"
+                Data="@Criterias" TItem="Criteria">
+        <Columns>
+            <RadzenDataGridColumn TItem="Criteria" Property="Technology" Title="Technology" />
+            <RadzenDataGridColumn TItem="Criteria" Property="YearsOfExperience" Title="YOE">
+                <Template Context="data">
+                    <RadzenTextBox MaxLength="2" Change=@(args => OnChange(args, data)) Class="w-100" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenButton style="width: 160px" Icon="save" BusyText="Saving ..." IsBusy=@IsSaveButtonBusy Click=@OnSaveButtonClick Text="Save" />
 }

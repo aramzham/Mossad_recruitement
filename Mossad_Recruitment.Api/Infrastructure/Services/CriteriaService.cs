@@ -1,4 +1,5 @@
 ﻿using Mossad_Recruitment.Api.Infrastructure.Services.Interfaces;
+using Mossad_Recruitment.Common.Dtos;
 using Mossad_Recruitment.Common.Models;
 
 namespace Mossad_Recruitment.Api.Infrastructure.Services
@@ -14,7 +15,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
 
         public IEnumerable<Criteria> Get()
         {
-            return _cache.Get<IEnumerable<Criteria>>(CacheKeys.Criterias);
+            return _cache.Get<IEnumerable<Criteria>>(CacheKeys.Criterias) ?? new List<Criteria>();
         }
 
         public void Set(IEnumerable<Criteria> criterias)

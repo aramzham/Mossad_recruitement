@@ -38,7 +38,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
 
             // may have been a response model with only full name and id, because that's what we'll use accepted candidates page
             var acceptedInCache = _cache.Get<IEnumerable<Candidate>>(CacheKeys.Accepted) ?? new List<Candidate>();
-            return acceptedInCache.Select(x=>x.ToDto(technologiesInCache));
+            return acceptedInCache.Select(x => x.ToDto(technologiesInCache));
         }
 
         public async Task<CandidateDto> Next()
@@ -58,7 +58,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
                 // look at experience
                 foreach (var experience in candidate.Experience)
                 {
-                    if (!criterias.Any(x => x.Technology == experience.Id && x.YearsOfExperience <= experience.YearsOfExperience))
+                    if (!criterias.Where(x => x.YearsOfExperience > 0).Any(x => x.Technology == experience.Id && x.YearsOfExperience <= experience.YearsOfExperience))
                     {
                         break;
                     }
