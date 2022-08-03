@@ -9,11 +9,13 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ICacheService _cache;
+        private readonly ITechnologyService _technologyService;
 
-        public CandidateService(HttpClient httpClient, ICacheService cache)
+        public CandidateService(HttpClient httpClient, ICacheService cache, ITechnologyService technologyService)
         {
             _httpClient = httpClient;
             _cache = cache;
+            _technologyService = technologyService;
         }
 
         public async Task Accept(Guid id)
@@ -34,7 +36,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
 
         public async Task<IEnumerable<CandidateDto>> GetAccepted()
         {
-            var technologiesInCache = await EnsureTechnologiesSetInCache();
+            var technologiesInCache = await _technologyService.GetAll();
 
             // may have been a response model with only full name and id, because that's what we'll use accepted candidates page
             var acceptedInCache = _cache.Get<IEnumerable<Candidate>>(CacheKeys.Accepted) ?? new List<Candidate>();
@@ -44,7 +46,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
         public async Task<CandidateDto> Next()
         {
             var candidatesInCache = await EnsureCandidatesSetInCache();
-            var technologiesInCache = await EnsureTechnologiesSetInCache();
+            var technologiesInCache = await _technologyService.GetAll();
             var criterias = _cache.Get<IEnumerable<Criteria>>(CacheKeys.Criterias) ?? new List<Criteria>();
 
             var candidate = default(Candidate);
@@ -58,7 +60,7 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
                 // look at experience
                 foreach (var experience in candidate.Experience)
                 {
-                    if (!criterias.Where(x => x.YearsOfExperience > 0).Any(x => x.Technology == experience.Id && x.YearsOfExperience <= experience.YearsOfExperience))
+                    if (!criterias.Where(x => x.YearsOfExperience > 0).Any(x => x.TechnologyId == experience.Id && x.YearsOfExperience <= experience.YearsOfExperience))
                     {
                         break;
                     }
@@ -92,21 +94,6 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
             }
 
             return candidates;
-        }
-
-        private async Task<IDictionary<Guid, Technology>> EnsureTechnologiesSetInCache()
-        {
-            var technologies = _cache.Get<IDictionary<Guid, Technology>>(CacheKeys.Technologies);
-            if (technologies is null)
-            {
-                var response = await _httpClient.GetStringAsync(CacheKeys.Technologies);
-                var deserializedResponse = JsonSerializer.Deserialize<IEnumerable<Technology>>(response);
-
-                technologies = deserializedResponse.ToDictionary(k => k.Id);
-                _cache.Set(CacheKeys.Technologies, technologies);
-            }
-
-            return technologies;
         }
     }
 }

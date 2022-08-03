@@ -4,16 +4,16 @@
 
 <h3>Criterias</h3>
 
-@if (@Criterias is null)
+@if (CriteriasToChoose is null)
 {
     <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
 }
 else
 {
     <RadzenDataGrid @ref="CriteriaDataGrid" AllowFiltering="true" AllowPaging="true" PageSize="20" AllowSorting="true"
-                Data="@Criterias" TItem="Criteria">
+                Data="@CriteriasToChoose" TItem="Criteria">
         <Columns>
-            <RadzenDataGridColumn TItem="Criteria" Property="Technology" Title="Technology" />
+            <RadzenDataGridColumn TItem="Criteria" Property="TechnologyName" Title="Technology" />
             <RadzenDataGridColumn TItem="Criteria" Property="YearsOfExperience" Title="YOE">
                 <Template Context="data">
                     <RadzenTextBox MaxLength="2" Change=@(args => OnChange(args, data)) Class="w-100" />
