@@ -10,9 +10,8 @@ namespace Mossad_Recruitment.Front.Pages.Base
         [Inject] public ICriteriaService CriteriaService { get; set; }
         [Inject] public ITechnologyService TechnologyService { get; set; }
 
-        protected IEnumerable<Criteria> CriteriasToChoose { get; set; }
+        protected IEnumerable<Criteria> Criterias { get; set; }
         protected RadzenDataGrid<Criteria> CriteriaDataGrid { get; set; }
-        protected List<Criteria> SelectedCriterias { get; set; }
         protected bool IsSaveButtonBusy { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -24,30 +23,36 @@ namespace Mossad_Recruitment.Front.Pages.Base
             foreach (var technology in technologies)
             {
                 var criteria = criteriasAlreadySet.FirstOrDefault(x => x.TechnologyId == technology.Key);
-                criterias.Add(criteria is not null
-                    ? criteria
-                    : new Criteria
-                    {
-                        TechnologyId = technology.Key,
-                        TechnologyName = technology.Value.Name
-                    });
+                criterias.Add(criteria ?? new Criteria
+                {
+                    TechnologyId = technology.Key,
+                    TechnologyName = technology.Value.Name
+                });
             }
 
-            CriteriasToChoose = criterias;
+            Criterias = criterias;
         }
 
         protected void OnChange(string numberOfYears, Criteria data)
         {
             if (int.TryParse(numberOfYears, out var noy) && noy != 0)
             {
-                data.YearsOfExperience = noy;
-                SelectedCriterias.Add(data);
+                var criteria = Criterias.FirstOrDefault(x => x.TechnologyId == data.TechnologyId);
+                if (criteria is not null)
+                {
+                    criteria.YearsOfExperience = noy;
+                }
             }
         }
 
-        protected Task OnSaveButtonClick()
+        protected async Task OnSaveButtonClick()
         {
-            return CriteriaService.Set(CriteriasToChoose.Concat(SelectedCriterias));
+            IsSaveButtonBusy = true;
+
+            await Task.Delay(2000); // just to work out the animation
+            await CriteriaService.Set(Criterias.Where(x => x.YearsOfExperience > 0));
+
+            IsSaveButtonBusy = false;
         }
     }
 }

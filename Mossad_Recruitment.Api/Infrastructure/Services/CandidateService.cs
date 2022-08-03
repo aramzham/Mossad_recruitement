@@ -46,27 +46,29 @@ namespace Mossad_Recruitment.Api.Infrastructure.Services
         public async Task<CandidateDto> Next()
         {
             var candidatesInCache = await EnsureCandidatesSetInCache();
-            var technologiesInCache = await _technologyService.GetAll();
             var criterias = _cache.Get<IEnumerable<Criteria>>(CacheKeys.Criterias) ?? new List<Criteria>();
 
             var candidate = default(Candidate);
             var random = new Random();
+            var foundMatch = false;
 
             // some sort of randomness
-            while (candidate is null)
+            while (!foundMatch)
             {
                 candidate = candidatesInCache.ElementAt(random.Next(0, candidatesInCache.Count)).Value;
 
                 // look at experience
                 foreach (var experience in candidate.Experience)
                 {
-                    if (!criterias.Where(x => x.YearsOfExperience > 0).Any(x => x.TechnologyId == experience.Id && x.YearsOfExperience <= experience.YearsOfExperience))
+                    if (criterias.Any(x => x.TechnologyId == experience.Id && x.YearsOfExperience <= experience.YearsOfExperience))
                     {
+                        foundMatch = true;
                         break;
                     }
                 }
             }
 
+            var technologiesInCache = await _technologyService.GetAll();
             return candidate.ToDto(technologiesInCache);
         }
 

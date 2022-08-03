@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Mossad_Recruitment.Api.Infrastructure.Services;
 using Mossad_Recruitment.Api.Infrastructure.Services.Interfaces;
 using Mossad_Recruitment.Common.Models;
@@ -23,7 +24,7 @@ app.MapGet("/technologies", (ITechnologyService technologyService) => technology
 // criterias
 app.MapGet("/criterias", (ICriteriaService criteriaService) => criteriaService.Get());
 
-app.MapPost("/criterias", (ICriteriaService criteriaService, IEnumerable<Criteria> criterias) => criteriaService.Set(criterias));
+app.MapPost("/criterias", (ICriteriaService criteriaService, [FromBody] IEnumerable<Criteria> criterias) => criteriaService.Set(criterias));
 
 // candidates
 app.MapGet("/candidate/next", (ICandidateService candidateService) => candidateService.Next());
